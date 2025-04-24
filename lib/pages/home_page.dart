@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:notes_app/services/firestore.dart';
 
 class HomePage extends StatefulWidget {
@@ -73,63 +75,195 @@ class _HomePageState extends State<HomePage> {
 }
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Notes App')),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Add your action here
-          openNoteBox();
-        },
-        child: const Icon(Icons.add),
-      ),
+    return SafeArea(
+      child: Scaffold(
 
-      body: StreamBuilder<List<Map<String, dynamic>>>(
-    stream: _firestoreService.getNotes(),
-    builder: (context, snapshot) {
-      if (snapshot.connectionState == ConnectionState.waiting) {
-        return const Center(child: CircularProgressIndicator());
-      }
-      if (snapshot.hasError) {
-        return const Center(child: Text('Error loading notes'));
-      }
-      if (!snapshot.hasData || snapshot.data!.isEmpty) {
-        return const Center(child: Text('No notes available'));
-      }
+        backgroundColor: Colors.white,
 
-      final notes = snapshot.data!;
-      return ListView.builder(
-        itemCount: notes.length,
-        itemBuilder: (context, index) {
-          final note = notes[index];
-          return ListTile(
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(onPressed: () {
-                  // ubdating the note
-                  openNoteBox(docID: note['id'],
-                    oldTitle: note['title'],
-                    oldContent: note['content'],);
-                } ,
-                icon: Icon(Icons.settings)),
+        bottomNavigationBar: CurvedNavigationBar(
+          backgroundColor: Colors.white,
+          color: Colors.orange,
+          items: <Widget>[
+            Icon(Icons.home),
+            Icon(Icons.favorite),
+            Icon(Icons.settings),
+          ],
+          onTap: (index) {
+            //Handle button tap
+          },
+        ),
 
-                IconButton(
-                  onPressed: () {
-                    // deleting the note
-                    _firestoreService.deleteNote(note['id']);
-                  },
-                  icon: const Icon(Icons.delete),
+        // appBar: AppBar(
+        //     title: const Text('Notes App', style:
+        //       TextStyle(
+        //         color: Colors.white,
+        //       )
+        //       ,),
+        //     backgroundColor: Colors.deepPurple[700],
+        // ),
+
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            // Add your action here
+            openNoteBox();
+          },
+          child: const Icon(Icons.add),
+        ),
+
+        body: Column(
+          children: [
+
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(30),
+                      child: Image.asset(
+                        'lib/assets/profil.jpg', // Add your illustration here
+                        fit: BoxFit.contain,
+                        height: 60,
+                      ),
+                    ),
+
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 19),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Good Morning!', style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.black,
+                          ),),
+                          Text('Lyes', style: TextStyle(
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            title: Text(note['title'] ?? 'No Title'),
-            subtitle: Text(note['content'] ?? 'No Content'),
-          );
-        },
-      );
-    },
-    ),
 
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Icon(Icons.notifications_active_rounded , color: Colors.deepPurple,),
+                )
+
+              ],),
+            ),
+
+            /// Search bar
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                padding: const EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: TextField(
+                  decoration: InputDecoration(
+                    hintText: "Search your notes",
+                    hintStyle: TextStyle(color: Colors.grey),
+                    prefixIcon: Icon(Icons.search, color: Colors.grey,),
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                  ),
+                ),
+              ),
+            ),
+
+            /// Displaying notes
+            Expanded(
+              child: StreamBuilder<List<Map<String, dynamic>>>(
+                stream: _firestoreService.getNotes(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (snapshot.hasError) {
+                    return const Center(child: Text('Error loading notes'));
+                  }
+                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(child: Text('No notes available'));
+                  }
+
+                  final notes = snapshot.data!;
+                  return ListView.builder(
+                    itemCount: notes.length,
+                    itemBuilder: (context, index) {
+                      final note = notes[index];
+                      final timestamp = note['timestamp'] != null ? (note['timestamp'] as Timestamp) : null;
+                      final formattedDate = timestamp != null
+                          ? DateFormat('MMMM d, h:mm a').format(timestamp.toDate())
+                          : 'No Date';
+
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.amber,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: ListTile(
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  onPressed: () {
+                                    openNoteBox(
+                                      docID: note['id'],
+                                      oldTitle: note['title'],
+                                      oldContent: note['content'],
+                                    );
+                                  },
+                                  icon: const Icon(Icons.settings),
+                                ),
+                                IconButton(
+                                  onPressed: () {
+                                    _firestoreService.deleteNote(note['id']);
+                                  },
+                                  icon: const Icon(Icons.delete),
+                                ),
+                              ],
+                            ),
+                            title: Text(note['title'] ?? 'No Title' , style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(note['content'] ?? 'No Content'),
+                                const SizedBox(height: 8),
+                                Text(
+                                  formattedDate,
+                                  style: const TextStyle(
+                                    color: Colors.brown, // Darker color than amber
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            )
+          ],
+        ),
+
+      ),
     );
   }
 }
