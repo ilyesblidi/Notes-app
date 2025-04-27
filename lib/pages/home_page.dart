@@ -16,6 +16,27 @@ class _HomePageState extends State<HomePage> {
 
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
+
+  String _searchQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize any necessary data or state here
+    // For example, you can set up a listener for the search controller
+    _searchController.addListener(() {
+      setState(() {
+        _searchQuery = _searchController.text;
+      });
+    });
+    }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   void openNoteBox({String? docID, String? oldTitle, String? oldContent}) {
   // Pre-fill the controllers with old data if available
@@ -168,13 +189,17 @@ class _HomePageState extends State<HomePage> {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: TextField(
+                  controller: _searchController,
                   decoration: InputDecoration(
                     hintText: "Search your notes",
                     hintStyle: TextStyle(color: Colors.grey),
-                    prefixIcon: Icon(Icons.search, color: Colors.grey,),
+                    prefixIcon: Icon(Icons.search, color: Colors.grey),
                     filled: true,
                     fillColor: Colors.grey[200],
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
                   ),
                 ),
               ),
@@ -195,18 +220,33 @@ class _HomePageState extends State<HomePage> {
                     return const Center(child: Text('No notes available'));
                   }
 
-                  final notes = snapshot.data!;
+                  final notes = snapshot.data!
+                      .where((note) =>
+                  note['title']
+                      ?.toLowerCase()
+                      .contains(_searchQuery.toLowerCase()) ??
+                      false ||
+                          note['content']
+                              ?.toLowerCase()
+                              .contains(_searchQuery.toLowerCase()) ??
+                      false)
+                      .toList();
+
                   return ListView.builder(
                     itemCount: notes.length,
                     itemBuilder: (context, index) {
                       final note = notes[index];
-                      final timestamp = note['timestamp'] != null ? (note['timestamp'] as Timestamp) : null;
+                      final timestamp = note['timestamp'] != null
+                          ? (note['timestamp'] as Timestamp)
+                          : null;
                       final formattedDate = timestamp != null
-                          ? DateFormat('MMMM d, h:mm a').format(timestamp.toDate())
+                          ? DateFormat('MMMM d, h:mm a')
+                          .format(timestamp.toDate())
                           : 'No Date';
 
                       return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 12),
                         child: Container(
                           decoration: BoxDecoration(
                             color: Colors.amber,
@@ -224,7 +264,7 @@ class _HomePageState extends State<HomePage> {
                                       oldContent: note['content'],
                                     );
                                   },
-                                  icon: const Icon(Icons.settings),
+                                  icon: const Icon(Icons.edit),
                                 ),
                                 IconButton(
                                   onPressed: () {
@@ -234,10 +274,13 @@ class _HomePageState extends State<HomePage> {
                                 ),
                               ],
                             ),
-                            title: Text(note['title'] ?? 'No Title' , style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),),
+                            title: Text(
+                              note['title'] ?? 'No Title',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -246,7 +289,7 @@ class _HomePageState extends State<HomePage> {
                                 Text(
                                   formattedDate,
                                   style: const TextStyle(
-                                    color: Colors.brown, // Darker color than amber
+                                    color: Colors.brown,
                                     fontSize: 12,
                                   ),
                                 ),
@@ -259,10 +302,9 @@ class _HomePageState extends State<HomePage> {
                   );
                 },
               ),
-            )
+            ),
           ],
         ),
-
       ),
     );
   }
