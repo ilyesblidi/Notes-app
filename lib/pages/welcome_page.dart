@@ -11,6 +11,7 @@ class WelcomePage extends StatelessWidget {
       backgroundColor: const Color(0xFF2F1859), // Dark purple background
       body: SafeArea(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 40),
             // Illustration
@@ -18,7 +19,7 @@ class WelcomePage extends StatelessWidget {
               flex: 5,
               child: Center(
                 child: Image.asset(
-                  'lib/assets/notes.gif', // Add your illustration here
+                  'lib/assets/note.png', // Add your illustration here
                   fit: BoxFit.contain,
                   height: 300,
                 ),
@@ -58,29 +59,41 @@ class WelcomePage extends StatelessWidget {
             // Button
             Padding(
               padding: const EdgeInsets.all(24.0),
-              child: SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFFB24D), // Orange color
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+              child: ElevatedButton.icon(
+                icon: Padding(
+                  padding: const EdgeInsets.only(left: 0, right: 12, top: 7, bottom: 7),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.orange,
+                      borderRadius: BorderRadius.circular(50),
                     ),
-                  ),
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (_) => HomePage()),
-                    );
-                  },
-                  child: const Text(
-                    "Start Now",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
+                    width: 50,
+                    height: 50,
+                    child: const Icon(
+                      size: 30,
+                      Icons.arrow_forward,
                       color: Colors.black,
                     ),
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black54, // Orange color
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (_) => HomePage()),
+                  );
+                },
+                label: const Text(
+                  "Start Now",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
                   ),
                 ),
               ),

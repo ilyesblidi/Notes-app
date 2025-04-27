@@ -102,6 +102,8 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Colors.white,
 
         bottomNavigationBar: CurvedNavigationBar(
+          index: 0,
+          height: 60,
           backgroundColor: Colors.white,
           color: Colors.orange,
           items: <Widget>[
