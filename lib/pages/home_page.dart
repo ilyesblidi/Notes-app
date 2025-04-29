@@ -1,8 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:notes_app/services/firestore.dart';
+
+import '../services/appwrite_service.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -38,62 +41,79 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  void openNoteBox({String? docID, String? oldTitle, String? oldContent}) {
-  // Pre-fill the controllers with old data if available
-  if (docID != null) {
+  void openNoteBox({String? docID, String? oldTitle, String? oldContent, String? oldImageId}) async {
+    final AppwriteService appwriteService = AppwriteService();
+    String? imageId;
+
     _titleController.text = oldTitle ?? '';
     _contentController.text = oldContent ?? '';
-  } else {
-    _titleController.clear();
-    _contentController.clear();
-  }
 
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text(docID == null ? 'Add Note' : 'Update Note'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              decoration: const InputDecoration(labelText: 'Title'),
-              controller: _titleController,
-            ),
-            const SizedBox(height: 10),
-            TextField(
-              decoration: const InputDecoration(labelText: 'Content'),
-              controller: _contentController,
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(docID == null ? 'Add Note' : 'Update Note'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                decoration: const InputDecoration(labelText: 'Title'),
+                controller: _titleController,
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                decoration: const InputDecoration(labelText: 'Content'),
+                controller: _contentController,
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () async {
+                  // Pick an image
+                  final imagePicker = ImagePicker();
+                  final pickedFile = await imagePicker.pickImage(source: ImageSource.gallery);
+
+                  if (pickedFile != null) {
+                    // Upload the image to Appwrite
+                    imageId = await appwriteService.uploadImage('68109ae20022b9bbeae3', pickedFile.path);
+                    if (imageId != null) {
+                      print('Image uploaded with ID: $imageId');
+                    }
+                  }
+                },
+                child: const Text('Upload Image'),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                if (docID == null) {
+                  _firestoreService.addNote(
+                    _titleController.text,
+                    _contentController.text,
+                    imageId: imageId,
+                  );
+                } else {
+                  _firestoreService.updateNote(
+                    docID,
+                    _titleController.text,
+                    _contentController.text,
+                    imageId: imageId ?? oldImageId,
+                  );
+                }
+
+                _titleController.clear();
+                _contentController.clear();
+                Navigator.of(context).pop();
+              },
+              child: Text(docID == null ? 'Add' : 'Update'),
             ),
           ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              if (docID == null) {
-                _firestoreService.addNote(
-                  _titleController.text,
-                  _contentController.text,
-                );
-              } else {
-                _firestoreService.updateNote(
-                  docID,
-                  _titleController.text,
-                  _contentController.text,
-                );
-              }
+        );
+      },
+    );
+  }
 
-              _titleController.clear();
-              _contentController.clear();
-              Navigator.of(context).pop();
-            },
-            child: Text(docID == null ? 'Add' : 'Update'),
-          ),
-        ],
-      );
-    },
-  );
-}
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -247,12 +267,19 @@ class _HomePageState extends State<HomePage> {
                           : 'No Date';
 
                       return Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 12, horizontal: 12),
+                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
                         child: Container(
                           decoration: BoxDecoration(
                             color: Colors.amber,
                             borderRadius: BorderRadius.circular(10),
+                            image: note['imageId'] != null
+                                ? DecorationImage(
+                              image: NetworkImage(
+                                AppwriteService().getImageUrl('[68109ae20022b9bbeae3]', note['imageId']),
+                              ),
+                              fit: BoxFit.cover,
+                            )
+                                : null,
                           ),
                           child: ListTile(
                             trailing: Row(
@@ -264,6 +291,7 @@ class _HomePageState extends State<HomePage> {
                                       docID: note['id'],
                                       oldTitle: note['title'],
                                       oldContent: note['content'],
+                                      oldImageId: note['imageId'],
                                     );
                                   },
                                   icon: const Icon(Icons.edit),
@@ -281,21 +309,12 @@ class _HomePageState extends State<HomePage> {
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
+                                color: Colors.white,
                               ),
                             ),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(note['content'] ?? 'No Content'),
-                                const SizedBox(height: 8),
-                                Text(
-                                  formattedDate,
-                                  style: const TextStyle(
-                                    color: Colors.brown,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ],
+                            subtitle: Text(
+                              note['content'] ?? 'No Content',
+                              style: TextStyle(color: Colors.white),
                             ),
                           ),
                         ),

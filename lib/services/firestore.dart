@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 
 class FirestoreService {
   // get collection of notes
@@ -10,11 +9,12 @@ class FirestoreService {
 
   // Create : add a new note
 
-  Future<void> addNote(String title, String content) async {
+  Future<void> addNote(String title, String content, {String? imageId}) async {
     try {
       await notes.add({
         'title': title,
         'content': content,
+        'imageId': imageId,
         'timestamp': FieldValue.serverTimestamp(),
       });
     } catch (e) {
@@ -37,11 +37,12 @@ class FirestoreService {
 
   // UBDATE : update a note
 
-  Future<void> updateNote(String id, String title, String content) async {
+  Future<void> updateNote(String id, String title, String content, {String? imageId}) async {
     try {
       await notes.doc(id).update({
         'title': title,
         'content': content,
+        'imageId': imageId,
         'timestamp': FieldValue.serverTimestamp(),
       });
     } catch (e) {
