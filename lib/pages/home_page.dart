@@ -3,9 +3,14 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:notes_app/pages/parameters_page.dart';
 import 'package:notes_app/services/firestore.dart';
-
 import '../services/appwrite_service.dart';
+import 'package:appwrite/appwrite.dart';
+
+final Client client = Client()
+   ..setEndpoint('https://fra.cloud.appwrite.io/v1')
+   ..setProject('68109a3900149fa4e09b');
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -42,7 +47,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void openNoteBox({String? docID, String? oldTitle, String? oldContent, String? oldImageId}) async {
-    final AppwriteService appwriteService = AppwriteService();
+    final AppwriteService appwriteService = AppwriteService(client);
     String? imageId;
 
     _titleController.text = oldTitle ?? '';
@@ -75,9 +80,12 @@ class _HomePageState extends State<HomePage> {
                   if (pickedFile != null) {
                     // Upload the image to Appwrite
                     imageId = await appwriteService.uploadImage('68109ae20022b9bbeae3', pickedFile.path);
+                    print('Image uploaded with ID: $imageId');
                     if (imageId != null) {
                       print('Image uploaded with ID: $imageId');
                     }
+                  } else {
+                    print('No image selected');
                   }
                 },
                 child: const Text('Upload Image'),
@@ -275,46 +283,96 @@ class _HomePageState extends State<HomePage> {
                             image: note['imageId'] != null
                                 ? DecorationImage(
                               image: NetworkImage(
-                                AppwriteService().getImageUrl('[68109ae20022b9bbeae3]', note['imageId']),
+                                AppwriteService(client).getImageUrl('68109ae20022b9bbeae3', note['imageId']),
                               ),
                               fit: BoxFit.cover,
                             )
                                 : null,
                           ),
-                          child: ListTile(
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  onPressed: () {
-                                    openNoteBox(
-                                      docID: note['id'],
-                                      oldTitle: note['title'],
-                                      oldContent: note['content'],
-                                      oldImageId: note['imageId'],
-                                    );
-                                  },
-                                  icon: const Icon(Icons.edit),
-                                ),
-                                IconButton(
-                                  onPressed: () {
-                                    _firestoreService.deleteNote(note['id']);
-                                  },
-                                  icon: const Icon(Icons.delete),
-                                ),
-                              ],
-                            ),
-                            title: Text(
-                              note['title'] ?? 'No Title',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                          child: GestureDetector(
+                            onTap: () {
+                              // Handle note tap if needed
+                              // For example, you can navigate to a detail page
+                              // or show a dialog with note details
+                              showDialog(context: context, builder: (context) {
+                                return AlertDialog(
+                                  title: Text(note['title'] ?? 'No Title'),
+                                  content: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(note['content'] ?? 'No Content'),
+                                      if (note['imageId'] != null)
+                                        Image.network(
+                                          AppwriteService(client).getImageUrl('68109ae20022b9bbeae3', note['imageId']),
+                                          fit: BoxFit.cover,
+                                        ),
+                                    ],
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: const Text('Close'),
+                                    ),
+                                  ],
+                                );
+                              },);
+
+                            },
+                            child: ListTile(
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    onPressed: () {
+                                      openNoteBox(
+                                        docID: note['id'],
+                                        oldTitle: note['title'],
+                                        oldContent: note['content'],
+                                        oldImageId: note['imageId'],
+                                      );
+                                    },
+                                    icon: const Icon(Icons.edit),
+                                  ),
+                                  IconButton(
+                                    onPressed: () {
+                                      _firestoreService.deleteNote(note['id']);
+                                    },
+                                    icon: const Icon(Icons.delete),
+                                  ),
+                                ],
                               ),
-                            ),
-                            subtitle: Text(
-                              note['content'] ?? 'No Content',
-                              style: TextStyle(color: Colors.white),
+                              title: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    note['title'] ?? 'No Title',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+
+                                  Text(
+                                    note['content'] ?? 'No Content',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ],
+                              ),
+
+                              subtitle: Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 8),
+                                child: Text(
+                                  formattedDate,
+                                  style: const TextStyle(
+                                    color: Colors.brown,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+
                             ),
                           ),
                         ),
