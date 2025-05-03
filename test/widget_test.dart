@@ -7,18 +7,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:appwrite/appwrite.dart';
 
 import 'package:notes_app/main.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    final client = Client()
-      ..setEndpoint('https://fra.cloud.appwrite.io/v1') // Replace with your Appwrite endpoint
-      ..setProject('68109a3900149fa4e09b'); // Replace with your Project ID
 
     // Build our app and trigger a frame.
-    await tester.pumpWidget(MyApp(client));
+    await tester.pumpWidget(MyApp());
 
     // Verify that our counter starts at 0.
     expect(find.text('0'), findsOneWidget);

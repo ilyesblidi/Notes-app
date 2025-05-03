@@ -1,16 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:notes_app/pages/parameters_page.dart';
 import 'package:notes_app/services/firestore.dart';
-import '../services/appwrite_service.dart';
-import 'package:appwrite/appwrite.dart';
 
-final Client client = Client()
-   ..setEndpoint('https://fra.cloud.appwrite.io/v1')
-   ..setProject('68109a3900149fa4e09b');
+import 'notification_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -20,6 +14,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
+  // final List<Widget> _pagesList = [
+  //   HomePage(),
+  //   FavoritesPage(),
+  //   ParametersPage()
+  // ] ;
+  // final int _currentindex = 0;
+
   final FirestoreService _firestoreService = FirestoreService();
 
   final TextEditingController _titleController = TextEditingController();
@@ -46,9 +48,7 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  void openNoteBox({String? docID, String? oldTitle, String? oldContent, String? oldImageId}) async {
-    final AppwriteService appwriteService = AppwriteService(client);
-    String? imageId;
+  void openNoteBox({String? docID, String? oldTitle, String? oldContent}) async {
 
     _titleController.text = oldTitle ?? '';
     _contentController.text = oldContent ?? '';
@@ -70,26 +70,6 @@ class _HomePageState extends State<HomePage> {
                 decoration: const InputDecoration(labelText: 'Content'),
                 controller: _contentController,
               ),
-              const SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: () async {
-                  // Pick an image
-                  final imagePicker = ImagePicker();
-                  final pickedFile = await imagePicker.pickImage(source: ImageSource.gallery);
-
-                  if (pickedFile != null) {
-                    // Upload the image to Appwrite
-                    imageId = await appwriteService.uploadImage('68109ae20022b9bbeae3', pickedFile.path);
-                    print('Image uploaded with ID: $imageId');
-                    if (imageId != null) {
-                      print('Image uploaded with ID: $imageId');
-                    }
-                  } else {
-                    print('No image selected');
-                  }
-                },
-                child: const Text('Upload Image'),
-              ),
             ],
           ),
           actions: [
@@ -99,14 +79,12 @@ class _HomePageState extends State<HomePage> {
                   _firestoreService.addNote(
                     _titleController.text,
                     _contentController.text,
-                    imageId: imageId,
                   );
                 } else {
                   _firestoreService.updateNote(
                     docID,
                     _titleController.text,
                     _contentController.text,
-                    imageId: imageId ?? oldImageId,
                   );
                 }
 
@@ -130,6 +108,7 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Colors.white,
 
         bottomNavigationBar: CurvedNavigationBar(
+
           index: 0,
           height: 60,
           backgroundColor: Colors.white,
@@ -203,7 +182,13 @@ class _HomePageState extends State<HomePage> {
 
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Icon(Icons.notifications_active_rounded , color: Colors.deepPurple,),
+                  child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) {
+                          return NotificationPage();
+                        },));
+                      },
+                      child: Icon(Icons.notifications_active_rounded , color: Colors.deepPurple,)),
                 )
 
               ],),
@@ -280,14 +265,6 @@ class _HomePageState extends State<HomePage> {
                           decoration: BoxDecoration(
                             color: Colors.amber,
                             borderRadius: BorderRadius.circular(10),
-                            image: note['imageId'] != null
-                                ? DecorationImage(
-                              image: NetworkImage(
-                                AppwriteService(client).getImageUrl('68109ae20022b9bbeae3', note['imageId']),
-                              ),
-                              fit: BoxFit.cover,
-                            )
-                                : null,
                           ),
                           child: GestureDetector(
                             onTap: () {
@@ -301,11 +278,6 @@ class _HomePageState extends State<HomePage> {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       Text(note['content'] ?? 'No Content'),
-                                      if (note['imageId'] != null)
-                                        Image.network(
-                                          AppwriteService(client).getImageUrl('68109ae20022b9bbeae3', note['imageId']),
-                                          fit: BoxFit.cover,
-                                        ),
                                     ],
                                   ),
                                   actions: [
@@ -330,7 +302,6 @@ class _HomePageState extends State<HomePage> {
                                         docID: note['id'],
                                         oldTitle: note['title'],
                                         oldContent: note['content'],
-                                        oldImageId: note['imageId'],
                                       );
                                     },
                                     icon: const Icon(Icons.edit),
