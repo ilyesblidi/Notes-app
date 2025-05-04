@@ -34,7 +34,7 @@ final navigatorKey = GlobalKey<NavigatorState>();
           '/notification_page': (context) => const NotificationPage(),
           '/parameters_page': (context) => const ParametersPage(),
           '/favNote_page': (context) => const FavoritesPage(),
-          'home_page': (context) => const HomePage(),
+          '/home_page': (context) => const HomePage(),
 
         },
         debugShowCheckedModeBanner: false,
