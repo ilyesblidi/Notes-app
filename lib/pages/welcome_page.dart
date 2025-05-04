@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:notes_app/pages/main_page.dart';
 
-import 'home_page.dart';
 
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
@@ -57,46 +57,51 @@ class WelcomePage extends StatelessWidget {
             ),
 
             // Button
-            Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: ElevatedButton.icon(
-                icon: Padding(
-                  padding: const EdgeInsets.only(left: 0, right: 12, top: 7, bottom: 7),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.orange,
-                      borderRadius: BorderRadius.circular(50),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 24.0),
+                  child: ElevatedButton.icon(
+                    icon: Padding(
+                      padding: const EdgeInsets.only(left: 0, right: 12, top: 7, bottom: 7),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.orange,
+                          borderRadius: BorderRadius.circular(50),
+                        ),
+                        width: 50,
+                        height: 50,
+                        child: const Icon(
+                          size: 30,
+                          Icons.arrow_forward,
+                          color: Colors.black,
+                        ),
+                      ),
                     ),
-                    width: 50,
-                    height: 50,
-                    child: const Icon(
-                      size: 30,
-                      Icons.arrow_forward,
-                      color: Colors.black,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black54, // Orange color
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(50),
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (_) => MainPage()),
+                      );
+                    },
+                    label: const Text(
+                      "Start Now",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black54, // Orange color
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50),
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (_) => HomePage()),
-                  );
-                },
-                label: const Text(
-                  "Start Now",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
+              ],
             ),
           ],
         ),

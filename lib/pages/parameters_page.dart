@@ -1,28 +1,133 @@
 import 'package:flutter/material.dart';
 
-class ParametersPage extends StatelessWidget {
-  const ParametersPage({super.key});
+                    class ParametersPage extends StatelessWidget {
+                      const ParametersPage({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Parameters'),
-        backgroundColor: const Color(0xFF2F1859), // Dark purple color
-      ),
-      body: const Center(
-        child: Text(
-          'No parameters available yet!',
-          style: TextStyle(fontSize: 24),
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Add your action here
-        },
-        child: const Icon(Icons.add),
-        backgroundColor: const Color(0xFF2F1859), // Dark purple color
-      ),
-    );
-  }
-}
+                      @override
+                      Widget build(BuildContext context) {
+                        return Scaffold(
+                          appBar: AppBar(
+                            title: const Text(
+                              'Settings',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            backgroundColor: Colors.transparent,
+                            elevation: 0,
+                            flexibleSpace: Container(
+                              decoration: const BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [Colors.deepPurple, Colors.purpleAccent],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                              ),
+                            ),
+                          ),
+                          body: Container(
+                            decoration: const BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [Colors.deepPurple, Colors.purpleAccent],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                            ),
+                            child: ListView(
+                              padding: const EdgeInsets.all(16.0),
+                              children: [
+                                const Text(
+                                  'General Settings',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                ListTile(
+                                  leading: const Icon(Icons.dark_mode, color: Colors.orange),
+                                  title: const Text('Dark Mode', style: TextStyle(color: Colors.white)),
+                                  trailing: Switch(
+                                    value: false,
+                                    onChanged: (value) {
+                                      // Handle dark mode toggle
+                                    },
+                                  ),
+                                ),
+                                const Divider(color: Colors.white54),
+                                ListTile(
+                                  leading: const Icon(Icons.notifications, color: Colors.orange),
+                                  title: const Text('Notifications', style: TextStyle(color: Colors.white)),
+                                  trailing: Switch(
+                                    value: true,
+                                    onChanged: (value) {
+                                      // Handle notifications toggle
+                                    },
+                                  ),
+                                ),
+                                const Divider(color: Colors.white54),
+                                const SizedBox(height: 30),
+                                const Text(
+                                  'Account Settings',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                ListTile(
+                                  leading: const Icon(Icons.person, color: Colors.orange),
+                                  title: const Text('Edit Profile', style: TextStyle(color: Colors.white)),
+                                  onTap: () {
+                                    // Navigate to edit profile page
+                                  },
+                                ),
+                                const Divider(color: Colors.white54),
+                                ListTile(
+                                  leading: const Icon(Icons.lock, color: Colors.orange),
+                                  title: const Text('Change Password', style: TextStyle(color: Colors.white)),
+                                  onTap: () {
+                                    // Navigate to change password page
+                                  },
+                                ),
+                                const Divider(color: Colors.white54),
+                                const SizedBox(height: 30),
+                                const Text(
+                                  'Other',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                ListTile(
+                                  leading: const Icon(Icons.info, color: Colors.orange),
+                                  title: const Text('About App', style: TextStyle(color: Colors.white)),
+                                  onTap: () {
+                                    // Show about app dialog
+                                    showAboutDialog(
+                                      context: context,
+                                      applicationName: 'Notes App',
+                                      applicationVersion: '1.0.0',
+                                      applicationIcon: const Icon(Icons.note, size: 40, color: Colors.orange),
+                                      children: [
+                                        const Text('This is a simple notes app to manage your daily tasks.'),
+                                      ],
+                                    );
+                                  },
+                                ),
+                                const Divider(color: Colors.white54),
+                                ListTile(
+                                  leading: const Icon(Icons.logout, color: Colors.red),
+                                  title: const Text('Logout', style: TextStyle(color: Colors.white)),
+                                  onTap: () {
+                                    // Handle logout
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }
+                    }
