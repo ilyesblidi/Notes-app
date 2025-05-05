@@ -49,7 +49,7 @@ class _NotificationPageState extends State<NotificationPage> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.orange),
           onPressed: () {
-            navigatorKey.currentState?.pushNamed('/home_page');
+            navigatorKey.currentState?.pushNamed('/main_page');
           },
         ),
       ),

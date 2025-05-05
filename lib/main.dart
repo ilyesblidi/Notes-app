@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:notes_app/Auth/auth_page.dart';
+import 'package:notes_app/Auth/control_page.dart';
 import 'package:notes_app/api/firebase_api.dart';
 import 'package:notes_app/firebase_options.dart';
 import 'package:notes_app/pages/favorites_page.dart';
 import 'package:notes_app/pages/home_page.dart';
+import 'package:notes_app/pages/main_page.dart';
 import 'package:notes_app/pages/notification_page.dart';
 import 'package:notes_app/pages/parameters_page.dart';
 import 'package:notes_app/pages/welcome_page.dart';
@@ -35,6 +38,10 @@ final navigatorKey = GlobalKey<NavigatorState>();
           '/parameters_page': (context) => const ParametersPage(),
           '/favNote_page': (context) => const FavoritesPage(),
           '/home_page': (context) => const HomePage(),
+          '/auth_page': (context) => AuthPage(),
+          '/login_page': (context) => const ControlPage(),
+          '/register_page': (context) => const ControlPage(),
+          '/main_page': (context) => const MainPage(),
 
         },
         debugShowCheckedModeBanner: false,
@@ -42,7 +49,7 @@ final navigatorKey = GlobalKey<NavigatorState>();
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: WelcomePage(),
+        home: ControlPage(),
       );
     }
   }

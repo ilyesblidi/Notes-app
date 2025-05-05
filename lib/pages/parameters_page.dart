@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:notes_app/main.dart';
 
                     class ParametersPage extends StatelessWidget {
                       const ParametersPage({super.key});
@@ -118,12 +120,24 @@ import 'package:flutter/material.dart';
                                   },
                                 ),
                                 const Divider(color: Colors.white54),
-                                ListTile(
-                                  leading: const Icon(Icons.logout, color: Colors.red),
-                                  title: const Text('Logout', style: TextStyle(color: Colors.white)),
-                                  onTap: () {
-                                    // Handle logout
+                                GestureDetector(
+                                  onTap: () async {
+                                    try {
+                                      await FirebaseAuth.instance.signOut();
+                                      // Optionally navigate to the login page after logout
+                                      navigatorKey.currentState?.pushNamed('/login_page');
+                                    } catch (e) {
+                                      // Log the error or show a message to the user
+                                      print('Error during logout: $e');
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text('Failed to log out. Please try again.')),
+                                      );
+                                    }
                                   },
+                                  child: ListTile(
+                                    leading: const Icon(Icons.logout, color: Colors.red),
+                                    title: const Text('Logout', style: TextStyle(color: Colors.white)),
+                                  ),
                                 ),
                               ],
                             ),

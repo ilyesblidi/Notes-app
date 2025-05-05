@@ -1,10 +1,120 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:notes_app/main.dart';
 import 'package:notes_app/pages/notification_page.dart';
 import 'package:notes_app/services/firestore.dart';
 import 'package:notes_app/utils/global_favorites.dart';
+
+///*******************************************************************************
+
+// class HomePage extends StatefulWidget {
+//   const HomePage({super.key});
+//
+//   @override
+//   State<HomePage> createState() => _HomePageState();
+// }
+//
+// class _HomePageState extends State<HomePage> {
+//
+//   final user = FirebaseAuth.instance.currentUser!;
+//
+//   List<String> docIDs  = [];
+//   int cpt = 0;
+//
+//   Future getDocid() async {
+//     docIDs.clear();
+//     ///get where 'email' is EqualTo user.email
+//     await FirebaseFirestore.instance.collection('users').where('email', isEqualTo: user.email) .get().then((snapshot) {
+//       snapshot.docs.forEach((doc) {
+//         //print( cpt + doc.reference);
+//         print('$cpt: ${doc.reference.id}');
+//         docIDs.add(doc.reference.id);
+//         cpt++;
+//       });
+//     });
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         centerTitle: true,
+//         title: Text(user.email!, style: TextStyle(
+//           fontSize: 19,
+//           fontWeight: FontWeight.bold,
+//         ),),
+//         backgroundColor: Colors.deepPurple[300],
+//         actions: [
+//           IconButton(
+//             icon: const Icon(Icons.logout),
+//             onPressed: () {
+//               FirebaseAuth.instance.signOut();
+//             },
+//           ),
+//         ],
+//       ),
+//
+//       body: Center(
+//         child: Column(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: [
+//
+//             Padding(
+//               padding: const EdgeInsets.all(10.0),
+//               child: Text('Data of users collection',
+//                   style: TextStyle(
+//                     fontWeight: FontWeight.bold,
+//                   )),
+//             ),
+//
+//             Expanded(child: FutureBuilder(
+//               future: getDocid(),
+//               builder: (context, snapshot) {
+//                 return ListView.builder(
+//                   itemCount: docIDs.length,
+//                   itemBuilder: (context, index) {
+//                     return Padding(
+//                       padding: const EdgeInsets.all(7.0),
+//                       child: ListTile(
+//                         title: GetUserDetails(documentId: docIDs[index]),
+//
+//                         tileColor: Colors.yellow[300],
+//                         shape: RoundedRectangleBorder(
+//                           borderRadius: BorderRadius.circular(20),
+//                         ),
+//
+//                         trailing: IconButton(
+//                           icon: Icon(Icons.delete),
+//                           onPressed: () {
+//                             FirebaseFirestore.instance.collection('users').doc(docIDs[index]).delete();
+//                             setState(() {
+//                               docIDs.removeAt(index);
+//                             });
+//
+//                           },
+//                         ),
+//                         leading: Icon(Icons.person, size: 40,),
+//                         subtitle: Text('Document ID: ${docIDs[index]}',
+//                           style: TextStyle(
+//                             fontSize: 12,
+//                             fontWeight: FontWeight.bold,
+//                           ),),
+//                       ),
+//                     );
+//                   },
+//                 );
+//               },) )
+//
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+///*********************************************************************************
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -14,6 +124,26 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final user = FirebaseAuth.instance.currentUser;
+  String firstName = '';
+  String lastName = '';
+
+  // List<String> docIDs  = [];
+  // int cpt = 0;
+  //
+  // Future getDocid() async {
+  //   docIDs.clear();
+  //   ///get where 'email' is EqualTo user.email
+  //   await FirebaseFirestore.instance.collection('users').where('email', isEqualTo: user?.email) .get().then((snapshot) {
+  //     snapshot.docs.forEach((doc) {
+  //       //print( cpt + doc.reference);
+  //       print('$cpt: ${doc.reference.id}');
+  //       docIDs.add(doc.reference.id);
+  //       cpt++;
+  //     });
+  //   });
+  // }
+
   final FirestoreService _firestoreService = FirestoreService();
   final TextEditingController _searchController = TextEditingController();
   final TextEditingController _titleController = TextEditingController();
@@ -23,11 +153,29 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    fetchUserName();
     _searchController.addListener(() {
       setState(() {
         _searchQuery = _searchController.text;
       });
     });
+  }
+
+  Future<void> fetchUserName() async {
+    if (user?.email != null) {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', isEqualTo: user!.email)
+          .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        final userData = snapshot.docs.first.data();
+        setState(() {
+          firstName = userData['first name'] ?? 'First Name';
+          lastName = userData['last name'] ?? 'Last Name';
+        });
+      }
+    }
   }
 
   @override
@@ -90,8 +238,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return SafeArea(
+Widget build(BuildContext context) {    return SafeArea(
       child: Scaffold(
         floatingActionButton: FloatingActionButton(
           onPressed: () {
@@ -138,8 +285,8 @@ class _HomePageState extends State<HomePage> {
                           const SizedBox(width: 16),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
-                              Text(
+                            children: [
+                              const Text(
                                 'Good Morning!',
                                 style: TextStyle(
                                   fontSize: 16,
@@ -147,9 +294,9 @@ class _HomePageState extends State<HomePage> {
                                 ),
                               ),
                               Text(
-                                'Lyes',
-                                style: TextStyle(
-                                  fontSize: 22,
+                                '$firstName $lastName',
+                                style: const TextStyle(
+                                  fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white,
                                 ),
@@ -163,7 +310,9 @@ class _HomePageState extends State<HomePage> {
                         children: [
                           GestureDetector(
                             onTap: () {
-                              navigatorKey.currentState?.pushNamed('/notification_page');
+                              navigatorKey.currentState?.pushNamed(
+                                '/notification_page',
+                              );
                             },
                             child: const Icon(
                               Icons.notifications_active_rounded,
@@ -185,7 +334,7 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ),
                         ],
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -397,6 +546,7 @@ class _HomePageState extends State<HomePage> {
                     );
                   },
                 ),
+
               ),
             ],
           ),
