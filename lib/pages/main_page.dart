@@ -12,12 +12,12 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  int _currentIndex = 0;
+  int _currentIndex = 1;
 
   /// List of pages to navigate to
   final List<Widget> _pagesList = [
-    const HomePage(),
     const FavoritesPage(),
+    const HomePage(),
     const ParametersPage(),
   ];
 
@@ -41,55 +41,57 @@ class _MainPageState extends State<MainPage> {
         ),
         child: _pagesList[_currentIndex],
       ),
-      bottomNavigationBar: CurvedNavigationBar(
-        onTap: _onItemTapped,
-        index: _currentIndex,
-        height: 65,
-        backgroundColor: Colors.transparent,
-        color: Colors.white.withOpacity(0.2), // Semi-transparent white
-        buttonBackgroundColor: Colors.deepPurple.withOpacity(0.8), // Active button color
-        items: <Widget>[
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              color: _currentIndex == 0 ? Colors.deepPurple.withOpacity(0.5) : Colors.transparent,
-            ),
-            child: Icon(
-              Icons.home,
-              color: _currentIndex == 0 ? Colors.white : Colors.white.withOpacity(0.7),
-              size: 30,
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              color: _currentIndex == 1 ? Colors.deepPurple.withOpacity(0.5) : Colors.transparent,
-            ),
-            child: Icon(
-              Icons.favorite,
-              color: _currentIndex == 1 ? Colors.white : Colors.white.withOpacity(0.7),
-              size: 30,
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              color: _currentIndex == 2 ? Colors.deepPurple.withOpacity(0.5) : Colors.transparent,
-            ),
-            child: Icon(
-              Icons.settings,
-              color: _currentIndex == 2 ? Colors.white : Colors.white.withOpacity(0.7),
-              size: 30,
-            ),
-          ),
-        ],
-        animationDuration: const Duration(milliseconds: 400),
-        animationCurve: Curves.fastOutSlowIn,
-        letIndexChange: (index) => true,
-      ),
+
+     bottomNavigationBar: CurvedNavigationBar(
+       onTap: _onItemTapped,
+       index: _currentIndex,
+       height: 65,
+       backgroundColor: Colors.transparent,
+       color: Colors.white.withOpacity(0.2), // Semi-transparent white
+       buttonBackgroundColor: Colors.deepPurple.withOpacity(0.8), // Active button color
+       items: <Widget>[
+         Container(
+           padding: const EdgeInsets.all(8),
+           decoration: BoxDecoration(
+             borderRadius: BorderRadius.circular(12),
+             color: _currentIndex == 0 ? Colors.deepPurple.withOpacity(0.5) : Colors.transparent,
+           ),
+           child: Icon(
+             Icons.favorite,
+             color: _currentIndex == 0 ? Colors.white : Colors.white.withOpacity(0.7),
+             size: 30,
+           ),
+         ),
+         Container(
+           padding: const EdgeInsets.all(8),
+           decoration: BoxDecoration(
+             borderRadius: BorderRadius.circular(12),
+             color: _currentIndex == 1 ? Colors.deepPurple.withOpacity(0.5) : Colors.transparent,
+           ),
+           child: Icon(
+             Icons.home,
+             color: _currentIndex == 1 ? Colors.white : Colors.white.withOpacity(0.7),
+             size: 30,
+           ),
+         ),
+         Container(
+           padding: const EdgeInsets.all(8),
+           decoration: BoxDecoration(
+             borderRadius: BorderRadius.circular(12),
+             color: _currentIndex == 2 ? Colors.deepPurple.withOpacity(0.5) : Colors.transparent,
+           ),
+           child: Icon(
+             Icons.settings,
+             color: _currentIndex == 2 ? Colors.white : Colors.white.withOpacity(0.7),
+             size: 30,
+           ),
+         ),
+       ],
+       animationDuration: const Duration(milliseconds: 400),
+       animationCurve: Curves.fastOutSlowIn,
+       letIndexChange: (index) => true,
+     ),
+
     );
   }
 }

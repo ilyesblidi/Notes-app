@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:notes_app/main.dart';
 
+import 'change_password_page.dart';
+
                     class ParametersPage extends StatelessWidget {
                       const ParametersPage({super.key});
 
@@ -89,7 +91,10 @@ import 'package:notes_app/main.dart';
                                   leading: const Icon(Icons.lock, color: Colors.orange),
                                   title: const Text('Change Password', style: TextStyle(color: Colors.white)),
                                   onTap: () {
-                                    // Navigate to change password page
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => const ChangePasswordPage()),
+                                    );
                                   },
                                 ),
                                 const Divider(color: Colors.white54),
@@ -115,6 +120,11 @@ import 'package:notes_app/main.dart';
                                       applicationIcon: const Icon(Icons.note, size: 40, color: Colors.orange),
                                       children: [
                                         const Text('This is a simple notes app to manage your daily tasks.'),
+                                        const SizedBox(height: 12),
+                                        const Text('Developped by : Lyes Blidi', textAlign: TextAlign.center,style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w400,
+                                        ),),
                                       ],
                                     );
                                   },

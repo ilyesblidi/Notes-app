@@ -3,8 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class RegisterPage extends StatefulWidget {
-
-  final VoidCallback showLoginPage ;
+  final VoidCallback showLoginPage;
 
   const RegisterPage({super.key, required this.showLoginPage});
 
@@ -13,7 +12,6 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmpasswordController = TextEditingController();
@@ -33,87 +31,88 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Future<void> signUp() async {
-  final email = _emailController.text.trim();
-  final password = _passwordController.text.trim();
-  final confirmpassword = _confirmpasswordController.text.trim();
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+    final confirmpassword = _confirmpasswordController.text.trim();
 
-  if (email.isEmpty || password.isEmpty || confirmpassword.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Please fill all the fields'),
-        backgroundColor: Colors.red,
-      ),
-    );
-    return;
+    if (email.isEmpty || password.isEmpty || confirmpassword.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please fill all the fields'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(email)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter a valid email address'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    if (password.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Password must be at least 6 characters long'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    if (password != confirmpassword) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Passwords do not match'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      await addUserDetails(
+        _firstnameController.text.trim(),
+        _lastnameController.text.trim(),
+        _phoneController.text.trim(),
+        _emailController.text.trim(),
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Sign up successful'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.message ?? 'An error occurred'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('An unexpected error occurred'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
-  if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(email)) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Please enter a valid email address'),
-        backgroundColor: Colors.red,
-      ),
-    );
-    return;
-  }
-
-  if (password.length < 6) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Password must be at least 6 characters long'),
-        backgroundColor: Colors.red,
-      ),
-    );
-    return;
-  }
-
-  if (password != confirmpassword) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Passwords do not match'),
-        backgroundColor: Colors.red,
-      ),
-    );
-    return;
-  }
-
-  try {
-    await FirebaseAuth.instance.createUserWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
-
-    await addUserDetails(
-      _firstnameController.text.trim(),
-      _lastnameController.text.trim(),
-      _phoneController.text.trim(),
-      _emailController.text.trim(),
-    );
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Sign up successful'),
-        backgroundColor: Colors.green,
-      ),
-    );
-  } on FirebaseAuthException catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(e.message ?? 'An error occurred'),
-        backgroundColor: Colors.red,
-      ),
-    );
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('An unexpected error occurred'),
-        backgroundColor: Colors.red,
-      ),
-    );
-  }
-}
-
-  Future addUserDetails( String firstname, String lastname, String phone, String email ) async {
+  Future addUserDetails(
+      String firstname, String lastname, String phone, String email) async {
     try {
       await FirebaseFirestore.instance.collection('users').add({
         'first name': firstname,
@@ -121,7 +120,6 @@ class _RegisterPageState extends State<RegisterPage> {
         'phone number': phone,
         'email': email,
       });
-      print('User details added successfully');
     } catch (e) {
       print('Failed to add user details: $e');
     }
@@ -130,199 +128,177 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.grey[300],
-        body: SafeArea(
-          child: SingleChildScrollView(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.2),
-
-                  //Icon(Icons.android , size: 80,),
-
-                  Text('Hello there!', style: TextStyle(
-                    fontSize: 40,
-                    fontWeight: FontWeight.bold,
-                  ),),
-
-                  SizedBox(height: 10,),
-
-                  Text('Register bellow with your details', style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),),
-
-                  SizedBox(height: 20,),
-
-                  Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 10 ,vertical: 5),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        border: Border.all(color: Colors.deepPurple , width: 2),
-                        borderRadius: BorderRadius.circular(15),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.deepPurple, Colors.purpleAccent],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 20),
+                    const Text(
+                      'Create Account',
+                      style: TextStyle(
+                        fontSize: 36,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
                       ),
-
-                      child: TextField(
-                        controller: _firstnameController,
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: 'First Name',
-                          //icon: Icon(Icons.person),
-                        ), ),
                     ),
-                  ),
-
-                  Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 10 ,vertical: 5),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        border: Border.all(color: Colors.deepPurple , width: 2),
-                        borderRadius: BorderRadius.circular(15),
+                    const SizedBox(height: 10),
+                    const Text(
+                      'Register below with your details',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.white70,
                       ),
-
-                      child: TextField(
-                        controller: _lastnameController,
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: 'Last Name',
-                          //icon: Icon(Icons.person),
-                        ), ),
+                      textAlign: TextAlign.center,
                     ),
-                  ),
-
-                  Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 10 ,vertical: 5),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        border: Border.all(color: Colors.deepPurple , width: 2),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-
-                      child: TextField(
-                        controller: _phoneController,
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: 'Phone Number',
-                          //icon: Icon(Icons.person),
-                        ), ),
+                    const SizedBox(height: 30),
+                    // First Name
+                    _buildTextField(
+                      controller: _firstnameController,
+                      hintText: 'First Name',
+                      icon: Icons.person,
                     ),
-                  ),
-
-                  Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 10 ,vertical: 5),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        border: Border.all(color: Colors.deepPurple , width: 2),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-
-                      child: TextField(
-                        controller: _emailController,
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: 'Email',
-                          icon: Icon(Icons.person),
-                        ), ),
+                    const SizedBox(height: 20),
+                    // Last Name
+                    _buildTextField(
+                      controller: _lastnameController,
+                      hintText: 'Last Name',
+                      icon: Icons.person_outline,
                     ),
-                  ),
-
-                  Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 10 ,vertical: 5),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        border: Border.all(color: Colors.deepPurple, width: 2),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-
-                      child: TextField(
-                        controller: _passwordController,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: 'Password',
-                          icon: Icon(Icons.lock),
-                        ), ),
+                    const SizedBox(height: 20),
+                    // Phone Number
+                    _buildTextField(
+                      controller: _phoneController,
+                      hintText: 'Phone Number',
+                      icon: Icons.phone,
                     ),
-                  ),
-
-                  Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 10 ,vertical: 5),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        border: Border.all(color: Colors.deepPurple, width: 2),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-
-                      child: TextField(
-                        controller: _confirmpasswordController,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: 'Confirm Password',
-                          icon: Icon(Icons.lock),
-                        ), ),
+                    const SizedBox(height: 20),
+                    // Email
+                    _buildTextField(
+                      controller: _emailController,
+                      hintText: 'Email',
+                      icon: Icons.email,
                     ),
-                  ),
-
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: GestureDetector(
+                    const SizedBox(height: 20),
+                    // Password
+                    _buildTextField(
+                      controller: _passwordController,
+                      hintText: 'Password',
+                      icon: Icons.lock,
+                      obscureText: true,
+                    ),
+                    const SizedBox(height: 20),
+                    // Confirm Password
+                    _buildTextField(
+                      controller: _confirmpasswordController,
+                      hintText: 'Confirm Password',
+                      icon: Icons.lock_outline,
+                      obscureText: true,
+                    ),
+                    const SizedBox(height: 30),
+                    // Sign Up Button
+                    GestureDetector(
                       onTap: signUp,
                       child: Container(
-                        padding: EdgeInsets.all(15),
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
                         decoration: BoxDecoration(
-                            color: Colors.deepPurple,
-                            borderRadius: BorderRadius.circular(15)
+                          gradient: const LinearGradient(
+                            colors: [Colors.purpleAccent, Colors.deepPurple],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.2),
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
                         ),
-                        child: Center(
+                        child: const Center(
                           child: Text(
-                            'Sign Up', style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),),
+                            'Sign Up',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text('I am a member'),
-
-                      SizedBox(width: 10,),
-
-                      GestureDetector(
-                        onTap: widget.showLoginPage,
-                        child: Text('Login', style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.deepPurple,
-                        ),),
-                      )
-                    ],
-                  ),
-
-
-                ],),
+                    const SizedBox(height: 20),
+                    // Already a member
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          'Already a member?',
+                          style: TextStyle(color: Colors.white70),
+                        ),
+                        const SizedBox(width: 5),
+                        GestureDetector(
+                          onTap: widget.showLoginPage,
+                          child: const Text(
+                            'Login',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
-        )
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String hintText,
+    required IconData icon,
+    bool obscureText = false,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.white70),
+      ),
+      child: TextField(
+        controller: controller,
+        obscureText: obscureText,
+        style: const TextStyle(color: Colors.white),
+        decoration: InputDecoration(
+          border: InputBorder.none,
+          hintText: hintText,
+          hintStyle: const TextStyle(color: Colors.white70),
+          prefixIcon: Icon(icon, color: Colors.white),
+          contentPadding: const EdgeInsets.symmetric(
+            vertical: 16.0,
+            horizontal: 16.0,
+          ),
+        ),
+      ),
     );
   }
 }

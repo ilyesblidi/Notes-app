@@ -193,45 +193,117 @@ class _HomePageState extends State<HomePage> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(docID == null ? 'Add Note' : 'Update Note'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                decoration: const InputDecoration(labelText: 'Title'),
-                controller: _titleController,
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                decoration: const InputDecoration(labelText: 'Content'),
-                controller: _contentController,
-              ),
-            ],
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
           ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                if (docID == null) {
-                  _firestoreService.addNote(
-                    _titleController.text,
-                    _contentController.text,
-                  );
-                } else {
-                  _firestoreService.updateNote(
-                    docID,
-                    _titleController.text,
-                    _contentController.text,
-                  );
-                }
-
-                _titleController.clear();
-                _contentController.clear();
-                Navigator.of(context).pop();
-              },
-              child: Text(docID == null ? 'Add' : 'Update'),
+          child: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.deepPurple, Colors.purpleAccent],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.all(Radius.circular(16)),
             ),
-          ],
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  docID == null ? 'Add Note' : 'Update Note',
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                TextField(
+                  decoration: const InputDecoration(
+                    labelText: 'Title',
+                    labelStyle: TextStyle(color: Colors.white70),
+                    filled: true,
+                    fillColor: Colors.white24,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                  controller: _titleController,
+                  style: const TextStyle(color: Colors.white),
+                ),
+                const SizedBox(height: 20),
+                TextField(
+                  decoration: const InputDecoration(
+                    labelText: 'Content',
+                    labelStyle: TextStyle(color: Colors.white70),
+                    filled: true,
+                    fillColor: Colors.white24,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                  controller: _contentController,
+                  style: const TextStyle(color: Colors.white),
+                  maxLines: 5,
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.grey, // Neutral gray for Cancel button
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('Cancel', style: TextStyle(
+                        color: Colors.white, // White text for better contrast
+                        fontWeight: FontWeight.bold)
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blueAccent, // Vibrant blue for Add button
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onPressed: () {
+                        if (docID == null) {
+                          _firestoreService.addNote(
+                            _titleController.text,
+                            _contentController.text,
+                          );
+                        } else {
+                          _firestoreService.updateNote(
+                            docID,
+                            _titleController.text,
+                            _contentController.text,
+                          );
+                        }
+                        _titleController.clear();
+                        _contentController.clear();
+                        Navigator.of(context).pop();
+                      },
+                      child: Text(docID == null ? 'Add' : 'Update', style: TextStyle(
+                        color: Colors.white, // White text for better contrast
+                        fontWeight: FontWeight.bold,
+                      ),),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
         );
       },
     );
@@ -339,6 +411,7 @@ Widget build(BuildContext context) {    return SafeArea(
                   ),
                 ),
               ),
+
               // Search Bar
               Padding(
                 padding: const EdgeInsets.all(16.0),
