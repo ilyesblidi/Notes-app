@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:notes_app/main.dart';
 import 'package:notes_app/pages/notification_page.dart';
 import 'package:notes_app/services/firestore.dart';
+import 'package:notes_app/services/noti_service.dart';
 import 'package:notes_app/utils/global_favorites.dart';
 
 ///*******************************************************************************
@@ -604,6 +605,13 @@ Widget build(BuildContext context) {    return SafeArea(
                                                   ),
                                                 ),
                                               );
+
+                                              // Show notification for adding to favorites
+                                              NotiService().showNotification(
+                                                title: 'Note Added to Favorites',
+                                                body: 'You have added "${note['title']}" to your favorites.',
+                                              );
+
                                             }
                                           });
                                         },

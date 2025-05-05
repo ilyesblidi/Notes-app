@@ -10,14 +10,19 @@ import 'package:notes_app/pages/main_page.dart';
 import 'package:notes_app/pages/notification_page.dart';
 import 'package:notes_app/pages/parameters_page.dart';
 import 'package:notes_app/pages/welcome_page.dart';
+import 'package:notes_app/services/noti_service.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
 
   void main() async {
     WidgetsFlutterBinding.ensureInitialized();
+
     await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
     await FirebaseApi().initNotifications() ;
+
+    // initNotifications
+    NotiService().initialize();
 
     runApp( MyApp() );
   }
