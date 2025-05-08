@@ -88,13 +88,13 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Icon(
-                      Icons.android,
+                      Icons.lightbulb,
                       size: 100,
                       color: Colors.white,
                     ),
                     const SizedBox(height: 20),
                     const Text(
-                      'Hello Again!',
+                      'Welcome back',
                       style: TextStyle(
                         fontSize: 36,
                         fontWeight: FontWeight.bold,
@@ -103,7 +103,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SizedBox(height: 10),
                     const Text(
-                      'Welcome back, you\'ve been missed!',
+                      'It\'s great to see you again!',
                       style: TextStyle(
                         fontSize: 18,
                         color: Colors.white70,

@@ -102,23 +102,23 @@ import 'package:firebase_messaging/firebase_messaging.dart';
                               ),
                               child: ListTile(
                                 contentPadding: const EdgeInsets.all(16.0),
+                                // title: Text(
+                                //   notification.notification?.title ?? 'No Title',
+                                //   style: TextStyle(
+                                //     fontWeight: clickedNotifications[index] == true
+                                //         ? FontWeight.normal
+                                //         : FontWeight.bold,
+                                //     fontSize: 16,
+                                //     color: Colors.black87,
+                                //   ),
+                                // ),
                                 title: Text(
-                                  notification.notification?.title ?? 'No Title',
-                                  style: TextStyle(
-                                    fontWeight: clickedNotifications[index] == true
-                                        ? FontWeight.normal
-                                        : FontWeight.bold,
-                                    fontSize: 16,
-                                    color: Colors.black87,
-                                  ),
-                                ),
-                                subtitle: Text(
                                   notification.notification?.body ?? 'No Body',
                                   style: TextStyle(
                                     fontWeight: clickedNotifications[index] == true
                                         ? FontWeight.normal
                                         : FontWeight.bold,
-                                    fontSize: 14,
+                                    fontSize: 15,
                                     color: Colors.black54,
                                   ),
                                 ),
