@@ -1,16 +1,59 @@
-# notes_app
+# 📓 Notes App
 
-A new Flutter project.
+A simple and elegant note-taking app built with **Flutter**.  
+This app allows users to manage their notes efficiently with features like login, registration, favorites, notifications, and more.
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+## ✨ Features
 
-A few resources to get you started if this is your first Flutter project:
+- 🔐 **Authentication**: Login, registration, and forgot password functionality  
+- 🏠 **Home Page**: View all notes with options to add, edit, and delete  
+- ⭐ **Favorites**: Mark notes for quick access  
+- 🔔 **Notifications**: Receive and manage notifications  
+- ⚙️ **Settings**: Update preferences, change password  
+- 💡 **Responsive UI**: Clean and user-friendly design  
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+---
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 📸 Screenshots
+
+### 🔑 Authentication
+
+| Login | Register | Forgot Password |
+|-------|----------|-----------------|
+| ![](./screenshots/login.jpg) | ![](./screenshots/register.jpg) | ![](./screenshots/change_password.jpg) |
+
+### 📝 Notes Management
+
+| Home | Add Note | Update Note |
+|------|----------|-------------|
+| ![](./screenshots/home.jpg) | ![](./screenshots/add_note.jpg) | ![](./screenshots/update_note.jpg) |
+
+### ⭐ Favorites and 🔔 Notifications and ⚙️ Settings
+
+| Favorites | Notifications | Settings |
+|-----------|---------------|----------|
+| ![](./screenshots/favorites.jpg) | ![](./screenshots/notifications.jpg) | ![](./screenshots/settings.jpg) |
+
+---
+
+## 🛠️ Tech Stack
+
+- **Frontend**: Flutter (Dart)  
+- **Backend**: Firebase Authentication, Cloud Firestore, Firebase Messaging
+
+---
+
+## 🚀 Installation Instructions
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/ilyesblidi/notes-app.git
+   cd notes-app
+2. **Install dependencies**:
+   ```bash
+   flutter pub get
+4. **Run the app**:
+   ```bash
+   flutter run
